@@ -1,0 +1,2 @@
+pydantic==2.7.4
+beautifulsoup4==4.12.3

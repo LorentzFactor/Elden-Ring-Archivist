@@ -54,11 +54,9 @@ class EldenRingItemMap:
 
     def process_file(self, file_name, file):
         group, field = self._determine_item_group_and_field(file_name)
-        print(group, field)
         if group is None:
             return
         for xml_elm in file.find_all(id=True):
             if re.fullmatch(self.not_null, xml_elm.string):
-                print(xml_elm.string)
                 continue
             self._add_item_text(xml_elm, group, field)

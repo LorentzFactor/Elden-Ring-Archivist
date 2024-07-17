@@ -33,6 +33,7 @@ langchain-core==0.2.19
 langchain-openai==0.1.16
 langchain-text-splitters==0.2.2
 langsmith==0.1.85
+lxml==5.2.2
 marshmallow==3.21.3
 matplotlib-inline==0.1.7
 multidict==6.0.5

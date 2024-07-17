@@ -8,7 +8,7 @@ def load_data_files(path):
     files = {}
     for file in os.listdir(path):
         if file.endswith(".xml"):
-            files[file.split('.')[0]] = BeautifulSoup(open(path + file, 'r'))
+            files[file.split('.')[0]] = BeautifulSoup(open(path + file, 'r'), features='xml')
             
     return files
 

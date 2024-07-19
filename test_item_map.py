@@ -1,4 +1,4 @@
-from helpers import EldenRingItemMap
+from item_map import EldenRingItemMap
 from langchain_core.documents import Document
 
 item_groups = {
@@ -24,7 +24,7 @@ Item Type: {item_group}
     for field_type, text in item.items():
         item_text += f'''{field_type}: {text}'''
         item_text += "\n--------------------------\n"
-    item_doc = Document(item_text)
+    item_doc = Document(item_text, id=(item_group + "_" + item_id))
     return item_doc
 
 simplest_items_as_doc = item_map.dump_items(dump_item_to_document)

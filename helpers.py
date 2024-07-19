@@ -6,13 +6,13 @@ import re
 
 class EldenRingItemMap:
     not_null: Pattern[str] = r'^(?!.*%null%).*'
-    enhanced: Pattern[str] = r'^(?!.*\+\d).*'
+    enhanced: Pattern[str] = r'^.*\+\d.*$'
 
     def __init__(self, item_groups: dict[str, list[str]], path: str):
         self._item_groups: dict[str, list[str]] = item_groups
         self.items: dict[str, dict] = {group: defaultdict(dict) for group in self._item_groups.keys()}
         self._path: str = path
-        self._blacklist_ids: list[str] = []
+        self._blacklist_ids: list[tuple[str]] = []
         for file_name, file_content in self._load_data_files():
             self.process_file(file_name, file_content)
 
@@ -36,14 +36,15 @@ class EldenRingItemMap:
         if group is None:
             return
         for xml_elm in file.find_all(id=True):
-            if re.fullmatch(self.not_null, xml_elm.string):
-                continue
-            self._add_item_text(xml_elm, group, field)
+            if str(xml_elm.get('id')) == '3000':
+                pass
+            if xml_elm.string != '%null%':
+                self._add_item_text(xml_elm, group, field)
 
     def _add_item_text(self, text_elm, text_group, text_field):
         item_id = text_elm.get('id')
         # Skip blacklisted items
-        if item_id in self._blacklist_ids:
+        if (text_group, item_id) in self._blacklist_ids:
             return
         # Add enhanced item names to blacklist, as these are essentially duplicates
         if text_field == "Name" and re.match(self.enhanced, text_elm.string):
@@ -53,7 +54,7 @@ class EldenRingItemMap:
 
     def _add_item_to_blacklist(self, item_id, text_group):
         # Add item to blacklist
-        self._blacklist_ids.append(item_id)
+        self._blacklist_ids.append((text_group, item_id))
         # Delete it from items dict if it is already there
         if item_id in self.items[text_group]:
             del self.items[text_group][item_id]

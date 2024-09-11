@@ -25,3 +25,30 @@ def add_embeddings(input_docs, embeddings_model):
     for embedding, doc in zip(embeddings, input_docs):
         doc['values'] = embedding
     return input_docs
+
+def dump_raw_text(item_group: str, item_id: str, item: dict[str, str], dump_fields: list[str]|None = None):
+    """
+    Dumps raw text from each field into a single document, without any added context text.
+    This may in fact be a more effective format for the embedding model, as it could be more
+    akin to the data it was trained on.
+
+    Args:
+        item_group (str): The item group of the item, e.g. Weapon.
+        item_id (str): The numerical id of the item. This is unique within the item group.
+        item (dict[str, str]): The various text fields found in the item.
+    """
+    # If no fields are specified, dump all fields
+    if dump_fields is None:
+        dump_fields = item.keys()
+    metadata: dict = {'item_type': item_group}
+    item_text: str = ""
+    for field_type, text in item.items():
+        if field_type in dump_fields:
+            item_text += text
+            item_text += "\n\n"
+        metadata[field_type] = text
+    item_doc = {'id': (item_group + "_" + item_id), 'metadata': metadata, 'text_to_embed': item_text}
+    return item_doc
+
+def dump_raw_text_no_cut_content(item_group: str, item_id: str, item: dict[str, str]):
+    return dump_raw_text(item_group, item_id, item, dump_fields=['Name', 'Caption', 'Dialog'])
